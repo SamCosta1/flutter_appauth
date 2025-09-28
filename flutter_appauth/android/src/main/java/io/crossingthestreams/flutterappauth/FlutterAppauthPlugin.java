@@ -60,6 +60,7 @@ public class FlutterAppauthPlugin
   private static final String TOKEN_ERROR_CODE = "token_failed";
   private static final String END_SESSION_ERROR_CODE = "end_session_failed";
   private static final String NULL_INTENT_ERROR_CODE = "null_intent";
+  private static final String NULL_ACTIVITY_ERROR_CODE = "null_activity";
   private static final String INVALID_CLAIMS_ERROR_CODE = "invalid_claims";
   private static final String NO_BROWSER_AVAILABLE_ERROR_CODE = "no_browser_available";
 
@@ -74,6 +75,9 @@ public class FlutterAppauthPlugin
 
   private static final String NULL_INTENT_ERROR_FORMAT =
       "Failed to authorize: Null intent received";
+
+  private static final String NULL_ACTIVITY_ERROR_CODE =
+      "Failed to authorize: Null activity received"
   private static final String NO_BROWSER_AVAILABLE_ERROR_FORMAT =
       "Failed to authorize: No suitable browser is available";
 
@@ -576,7 +580,12 @@ public class FlutterAppauthPlugin
     final EndSessionRequest endSessionRequest = endSessionRequestBuilder.build();
     AuthorizationService authorizationService = getAuthorizationService();
     Intent endSessionIntent = authorizationService.getEndSessionRequestIntent(endSessionRequest);
-    mainActivity.startActivityForResult(endSessionIntent, RC_END_SESSION);
+
+    if (mainActivity != null) {
+      mainActivity.startActivityForResult(endSessionIntent, RC_END_SESSION);
+    } else {
+      finishWithError(NULL_ACTIVITY_ERROR_CODE, NULL_ACTIVITY_ERROR_CODE, null);
+    }
   }
 
   private AuthorizationService getAuthorizationService() {
